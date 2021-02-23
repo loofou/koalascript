@@ -1,0 +1,10 @@
+define Config as
+	set hello to "hello"
+	set world to "world"
+	set test3 to 2
+	set test4 to 3.4
+	set bool to on
+	set bool1 to off
+
+create Prefab Player as
+	set readOnly to [ "PlayerCharacterTag",  ]
