@@ -27,6 +27,34 @@ namespace KoalaTest
 			Assert.IsTrue(type.Value is KNumber);
 			Assert.IsTrue(Math.Abs((KNumber)type.Value - expectedValue) < 0.0001);
 		}
+		
+		[TestCase("set $testVar to off", "testVar", VariableScope.Local, false)]
+		[TestCase("set $test to on", "test", VariableScope.Local, true)]
+		[TestCase("set %t to True", "t", VariableScope.Global, true)]
+		[TestCase("set ~dar to false", "dar", VariableScope.Temp, false)]
+		[TestCase("set $testVar to yes", "testVar", VariableScope.Local, true)]
+		[TestCase("set $testVar to No", "testVar", VariableScope.Local, false)]
+		public void TestBools(string testScript, string expectedVarName, VariableScope expectedScope, bool expectedValue)
+		{
+			KeyValuePair<KVar, KoalaType> type = KoalaParser.TypeDefinition.ParseOrThrow(testScript);
+
+			Assert.IsTrue(type.Key.RawValue == expectedVarName);
+			Assert.IsTrue(type.Key.Scope == expectedScope);
+			Assert.IsTrue(type.Value is KBool);
+			Assert.IsTrue((KBool)type.Value == expectedValue);
+		}
+
+		[TestCase("set")]
+		[TestCase("set testVar")]
+		[TestCase("set $testVar hello")]
+		[TestCase("set $testVar to")]
+		[TestCase("set $Testvar to 5")]
+		[TestCase("set $testVar to orange")]
+		[TestCase("set $testVar to hello world")]
+		public void TestFails(string testScript)
+		{
+			Assert.Catch<ParseException>(() => KoalaParser.TypeDefinition.ParseOrThrow(testScript));
+		}
 	}
 
 }

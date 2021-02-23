@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using KoalaScript.Lang;
 using Pidgin;
+using ServiceStack;
 using static Pidgin.Comment.CommentParser;
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
@@ -66,7 +68,27 @@ namespace KoalaScript.Parser
 					, String("Off")
 					 ));
 
-		public static readonly Parser<char, bool> Bool = Try(True.Or(False)).Select(bool.Parse).Labelled("boolean");
+		public static readonly Parser<char, bool> Bool =
+			Try(True.Or(False))
+			   .Select(boolean =>
+				{
+					if(boolean.EqualsIgnoreCase("true")
+					|| boolean.EqualsIgnoreCase("on")
+					|| boolean.EqualsIgnoreCase("yes"))
+					{
+						return true;
+					}
+
+					if(boolean.EqualsIgnoreCase("false")
+					|| boolean.EqualsIgnoreCase("off")
+					|| boolean.EqualsIgnoreCase("no"))
+					{
+						return false;
+					}
+
+					return bool.Parse(boolean);
+				})
+			   .Labelled("boolean");
 
 		//Operation Type
 		public static readonly Parser<char, char> Add = Tok('+');
