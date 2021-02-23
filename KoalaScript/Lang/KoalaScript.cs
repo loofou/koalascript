@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sawmill;
 
 namespace KoalaScript.Lang
@@ -10,4 +11,8 @@ namespace KoalaScript.Lang
 		public abstract KoalaType SetChildren(ReadOnlySpan<KoalaType> newChildren);
 	}
 
+	public class KoalaScript
+	{
+		public Dictionary<KVar, KoalaType> Globals;
+	}
 }

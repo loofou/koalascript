@@ -8,7 +8,7 @@ using static Pidgin.Parser<char>;
 namespace KoalaScript.Parser
 {
 
-	public static class ParserUtils
+	public static class KoalaParser
 	{
 		//Grammar Definition
 		public static readonly Parser<char, string> Comment = Try(String("//").Or(String("#")));
@@ -109,11 +109,11 @@ namespace KoalaScript.Parser
 
 		public static readonly Parser<char, KoalaType> Type = Try(Operation.Or(LiteralType));
 
-		public static readonly Parser<char, KeyValuePair<string, KoalaType>> TypeDefinition =
+		public static readonly Parser<char, KeyValuePair<KVar, KoalaType>> TypeDefinition =
 			Set
-			   .Then(VariableName)
+			   .Then(VarType)
 			   .Before(To)
-			   .SelectMany(_ => Type, (name, type) => new KeyValuePair<string, KoalaType>(name, type)).Before(SkipWhitespaces);
+			   .SelectMany(_ => Type, (name, type) => new KeyValuePair<KVar, KoalaType>((KVar)name, type)).Before(SkipWhitespaces);
 
 		//public static IEnumerable<KoalaMap> Parse(string input) => ObjectDefinition.Separated(SkipWhitespaces).ParseOrThrow(input);
 	}

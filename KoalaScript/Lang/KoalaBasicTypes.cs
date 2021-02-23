@@ -3,18 +3,24 @@ using System.Globalization;
 
 namespace KoalaScript.Lang
 {
-	public abstract class KoalaLiteral<T> : KoalaType
+
+	public abstract class KoalaLiteral<T> : KoalaType, IEquatable<T>, IComparable<T>
+		where T : IComparable<T>, IEquatable<T>
 	{
 		public T RawValue { get; }
 
 		public KoalaLiteral(T rawValue)
 		{
-			RawValue = rawValue;
+			RawValue = rawValue ?? throw new ArgumentNullException(nameof(rawValue));
 		}
 
 		public override int CountChildren() => 0;
 		public override void GetChildren(Span<KoalaType> childrenReceiver) { }
 		public override KoalaType SetChildren(ReadOnlySpan<KoalaType> newChildren) => this;
+
+		public bool Equals(T other) => RawValue.Equals(other);
+		public int CompareTo(T other) => RawValue.CompareTo(other);
+
 		public override string ToString() => RawValue.ToString();
 	}
 
@@ -41,7 +47,7 @@ namespace KoalaScript.Lang
 		public static implicit operator bool(KBool val) => val.RawValue;
 		public static implicit operator KBool(bool val) => new KBool(val);
 	}
-	
+
 	public class KVar : KoalaLiteral<string>
 	{
 		public VariableScope Scope { get; }
