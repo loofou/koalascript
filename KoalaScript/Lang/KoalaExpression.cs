@@ -1,6 +1,6 @@
 using System;
 
-namespace PidginTest.KoalaScript
+namespace KoalaScript.Lang
 {
 
 	public abstract class UnaryExpr : KoalaType
@@ -45,13 +45,6 @@ namespace PidginTest.KoalaScript
 		protected abstract string GetOperatorSymbol();
 
 		public override string ToString() => $"{Left} {GetOperatorSymbol()} {Right}";
-
-		public override string ToString(KoalaFormatting formatting) =>
-			formatting switch
-				{
-					KoalaFormatting.Minimal => $"{Left}{GetOperatorSymbol()}{Right}"
-				  , _ => ToString()
-				};
 	}
 
 	public class Add : BinaryExpr

@@ -9,8 +9,9 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>KoalaScript</RootNamespace>
         <AssemblyName>KoalaScript</AssemblyName>
-        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,6 +33,7 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="Microsoft.CSharp" />
         <Reference Include="mscorlib" />
         <Reference Include="Pidgin, Version=2.5.0.0, Culture=neutral, PublicKeyToken=cf8803ee5be21175">
           <HintPath>..\packages\Pidgin.2.5.0\lib\net451\Pidgin.dll</HintPath>
@@ -39,6 +41,10 @@
         </Reference>
         <Reference Include="Sawmill, Version=3.2.1.0, Culture=neutral, PublicKeyToken=a11f4e47dd90e775">
           <HintPath>..\packages\Sawmill.3.2.1\lib\net461\Sawmill.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="ServiceStack.Text, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587">
+          <HintPath>..\packages\ServiceStack.Text.5.10.4\lib\net45\ServiceStack.Text.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="System" />
@@ -50,6 +56,7 @@
           <HintPath>..\packages\System.Collections.Immutable.5.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
           <Private>True</Private>
         </Reference>
+        <Reference Include="System.Configuration" />
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
         <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
@@ -72,10 +79,13 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="KoalaBasicTypes.cs" />
-        <Compile Include="KoalaConfig.cs" />
-        <Compile Include="KoalaExpression.cs" />
-        <Compile Include="KoalaScriptParser.cs" />
+        <Compile Include="Lang\KoalaBasicTypes.cs" />
+        <Compile Include="Lang\KoalaConfig.cs" />
+        <Compile Include="Lang\KoalaEnums.cs" />
+        <Compile Include="Lang\KoalaExpression.cs" />
+        <Compile Include="Lang\KoalaMap.cs" />
+        <Compile Include="Lang\KoalaScript.cs" />
+        <Compile Include="Parser\ParserUtils.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>

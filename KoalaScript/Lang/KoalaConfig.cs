@@ -1,4 +1,4 @@
-namespace PidginTest.KoalaScript
+namespace KoalaScript.Lang
 {
 
 	public class IKoalaConfig { }
