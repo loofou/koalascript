@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KoalaScript.Lang
 {
@@ -19,8 +20,7 @@ namespace KoalaScript.Lang
 
 		public override string ToString()
 		{
-			//TODO
-			return base.ToString();
+			return $"( {string.Join(", ", Value.Select(pair => $"{pair.Key}: {pair.Value}"))} )";
 		}
 	}
 

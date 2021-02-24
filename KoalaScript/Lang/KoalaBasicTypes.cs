@@ -9,7 +9,7 @@ namespace KoalaScript.Lang
 	{
 		public T RawValue { get; }
 
-		public KoalaLiteral(T rawValue)
+		protected KoalaLiteral(T rawValue)
 		{
 			RawValue = rawValue ?? throw new ArgumentNullException(nameof(rawValue));
 		}

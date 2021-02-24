@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KoalaScript.Lang;
 using Pidgin;
@@ -13,43 +12,47 @@ namespace KoalaScript.Parser
 	public static class KoalaParser
 	{
 		//Grammar Definition
-		public static readonly Parser<char, string> Comment = Try(String("//").Or(String("#")));
-		public static readonly Parser<char, Unit> SkipComments = SkipLineComment(Comment);
+		static readonly Parser<char, string> Comment = String("#");
+		static readonly Parser<char, Unit> SkipComments = Whitespaces.Then(SkipLineComment(Comment));
+		static readonly Parser<char, Unit> SkipToEnd = Whitespaces.Then(End.Or(Try(EndOfLine).IgnoreResult()));
 
-		public static Parser<char, T> Tok<T>(Parser<char, T> p) => Try(p).Before(SkipWhitespaces);
-		public static Parser<char, string> Tok(string value) => Tok(String(value));
-		public static Parser<char, char> Tok(char value) => Tok(Char(value));
+		static readonly Parser<char, Unit> SkipEmptyOrCommentLines = Try(Whitespaces.Then(Try(SkipComments.Or(SkipToEnd))).SkipMany());
+
+		static Parser<char, T> Keyword<T>(Parser<char, T> p) => Try(p.Before(Whitespace));
+		static Parser<char, string> Keyword(string value) => Keyword(String(value));
+		static Parser<char, char> Keyword(char value) => Keyword(Char(value));
+		static Parser<char, T> Line<T>(Parser<char, T> p) => Try(p.Before(Try(SkipComments.Or(SkipToEnd))));
 
 		//Variable creation
-		public static readonly Parser<char, string> Set = Tok("set");
-		public static readonly Parser<char, string> To = Tok("to");
+		static readonly Parser<char, string> Set = Keyword("set");
+		static readonly Parser<char, string> To = Keyword("to");
 
-		public static readonly Parser<char, char> Percent = Char('%');
-		public static readonly Parser<char, char> Dollar = Char('$');
-		public static readonly Parser<char, char> Tilde = Char('~');
+		static readonly Parser<char, char> Percent = Char('%');
+		static readonly Parser<char, char> Dollar = Char('$');
+		static readonly Parser<char, char> Tilde = Char('~');
 
-		public static readonly Parser<char, VariableScope> VariableScope =
+		static readonly Parser<char, VariableScope> VariableScope =
 			Try(OneOf(Percent, Dollar, Tilde))
 			   .Select(KoalaEnumExtensions.GetVariableScopeFromChar).Labelled("variable scope symbol ($, % or ~)");
 
-		public static readonly Parser<char, string> VariableName =
-			Tok(Lowercase.SelectMany(_ => OneOf(Letter, Digit, Char('_'), Char('-')).ManyString()
+		static readonly Parser<char, string> VariableName =
+			Try(Lowercase.SelectMany(_ => OneOf(Letter, Digit, Char('_'), Char('-')).ManyString()
 								   , (first, rest) => first + rest)).Labelled("variable name");
 
 		//String Type
-		public static readonly Parser<char, char> Quote = Char('"');
+		static readonly Parser<char, char> Quote = Char('"');
 
-		public static readonly Parser<char, string> String =
-			Tok(Token(c => c != '"')
+		static readonly Parser<char, string> String =
+			Try(Token(c => c != '"')
 			   .ManyString()
 			   .Between(Quote)).Labelled("quoted string");
 
 		//Number Type
-		public static readonly Parser<char, double> Number = Tok(Real).Labelled("number");
+		static readonly Parser<char, double> Number = Try(Real).Labelled("number");
 
 		//Bool Type
-		public static readonly Parser<char, string> True
-			= Tok(OneOf(
+		static readonly Parser<char, string> True
+			= Try(OneOf(
 						String("true")
 					  , String("True")
 					  , String("yes")
@@ -58,8 +61,8 @@ namespace KoalaScript.Parser
 					  , String("On")
 					   ));
 
-		public static readonly Parser<char, string> False =
-			Tok(OneOf(
+		static readonly Parser<char, string> False =
+			Try(OneOf(
 					  String("false")
 					, String("False")
 					, String("no")
@@ -68,7 +71,7 @@ namespace KoalaScript.Parser
 					, String("Off")
 					 ));
 
-		public static readonly Parser<char, bool> Bool =
+		static readonly Parser<char, bool> Bool =
 			Try(True.Or(False))
 			   .Select(boolean =>
 				{
@@ -91,53 +94,47 @@ namespace KoalaScript.Parser
 			   .Labelled("boolean");
 
 		//Operation Type
-		public static readonly Parser<char, char> Add = Tok('+');
-		public static readonly Parser<char, char> Sub = Tok('-');
-		public static readonly Parser<char, char> Mul = Tok('*');
-		public static readonly Parser<char, char> Div = Tok('/');
+		static readonly Parser<char, char> Add = Char('+').Between(SkipWhitespaces);
+		static readonly Parser<char, char> Sub = Char('-').Between(SkipWhitespaces);
+		static readonly Parser<char, char> Mul = Char('*').Between(SkipWhitespaces);
+		static readonly Parser<char, char> Div = Char('/').Between(SkipWhitespaces);
 
 		//Parsing
-		/*static readonly Parser<char, KoalaMap> ObjectDefinition =
-			Define
-			   .Then(ObjectName)
-			   .Before(As)
-			   .SelectMany(_ => TypeDefinition.Separated(SkipWhitespaces),
-						   (name, pairs) => new KoalaMap(pairs.ToDictionary()));*/
+		static readonly Parser<char, KoalaType> StringType =
+			String.Select(s => (KoalaType)new KString(s)).Labelled("string type");
 
-		public static readonly Parser<char, KoalaType> StringType =
-			String.Select(s => (KoalaType)new KString(s));
+		static readonly Parser<char, KoalaType> NumberType =
+			Number.Select(d => (KoalaType)new KNumber(d)).Labelled("number type");
 
-		public static readonly Parser<char, KoalaType> NumberType =
-			Number.Select(d => (KoalaType)new KNumber(d));
+		static readonly Parser<char, KoalaType> BoolType =
+			Bool.Select(b => (KoalaType)new KBool(b)).Labelled("bool type");
 
-		public static readonly Parser<char, KoalaType> BoolType =
-			Bool.Select(b => (KoalaType)new KBool(b));
+		static readonly Parser<char, KoalaType> VarType =
+			Try(Map((symbol, name) => (KoalaType)new KVar(symbol, name), VariableScope, VariableName)
+				   .Or(VariableName.Select(name => (KoalaType)new KVar(Lang.VariableScope.Local, name)))).Labelled("variable type");
 
-		public static readonly Parser<char, KoalaType> VarType =
-			Map((symbol, name) => (KoalaType)new KVar(symbol, name)
-			  , VariableScope, VariableName);
+		static readonly Parser<char, KoalaType> LiteralType = Try(StringType.Or(NumberType).Or(BoolType).Or(VarType));
 
-		public static readonly Parser<char, KoalaType> LiteralType = Try(StringType.Or(NumberType).Or(BoolType).Or(VarType));
-
-		public static readonly Parser<char, KoalaType> AddOp =
+		static readonly Parser<char, KoalaType> AddOp =
 			Map((type1, _, type2) => (KoalaType)new Add(type1, type2)
 			  , LiteralType, Add, LiteralType);
 
-		public static readonly Parser<char, KoalaType> SubOp =
+		static readonly Parser<char, KoalaType> SubOp =
 			Map((type1, _, type2) => (KoalaType)new Sub(type1, type2)
 			  , LiteralType, Sub, LiteralType);
 
-		public static readonly Parser<char, KoalaType> Operation = Try(AddOp.Or(SubOp));
+		static readonly Parser<char, KoalaType> Operation = Try(AddOp.Or(SubOp)).Labelled("operation");
 
-		public static readonly Parser<char, KoalaType> Type = Try(Operation.Or(LiteralType));
+		static readonly Parser<char, KoalaType> Type = Try(Operation.Or(LiteralType)).Labelled("type");
 
 		public static readonly Parser<char, KeyValuePair<KVar, KoalaType>> TypeDefinition =
-			Set
-			   .Then(VarType)
-			   .Before(To)
-			   .SelectMany(_ => Type, (name, type) => new KeyValuePair<KVar, KoalaType>((KVar)name, type)).Before(SkipWhitespaces);
+			Line(Set
+				.Then(VarType)
+				.Before(To)
+				.SelectMany(_ => Type, (name, type) => new KeyValuePair<KVar, KoalaType>((KVar)name, type))).Labelled("type definition");
 
-		//public static IEnumerable<KoalaMap> Parse(string input) => ObjectDefinition.Separated(SkipWhitespaces).ParseOrThrow(input);
+		public static readonly Parser<char, IEnumerable<KeyValuePair<KVar, KoalaType>>> RootVariables =
+			Try(TypeDefinition.SeparatedAndOptionallyTerminated(EndOfLine).Select(list => list)).Labelled("root variable");
 	}
 
 }
