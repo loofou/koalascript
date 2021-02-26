@@ -1,6 +1,6 @@
 namespace KoalaScript.Lang
 {
 
-	public class IKoalaConfig { }
-	
+	public interface IKoalaConfig { }
+
 }

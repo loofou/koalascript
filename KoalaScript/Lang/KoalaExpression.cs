@@ -50,6 +50,8 @@ namespace KoalaScript.Lang
 	public class Add : BinaryExpr
 	{
 		public Add(KoalaType left, KoalaType right) : base(left, right) { }
+		public override object GetValue() => null;
+
 		public override KoalaType SetChildren(ReadOnlySpan<KoalaType> newChildren) => new Add(newChildren[0], newChildren[1]);
 		protected override string GetOperatorSymbol() => "+";
 	}
@@ -57,6 +59,8 @@ namespace KoalaScript.Lang
 	public class Sub : BinaryExpr
 	{
 		public Sub(KoalaType left, KoalaType right) : base(left, right) { }
+		public override object GetValue() => null;
+		
 		public override KoalaType SetChildren(ReadOnlySpan<KoalaType> newChildren) => new Sub(newChildren[0], newChildren[1]);
 		protected override string GetOperatorSymbol() => "-";
 	}

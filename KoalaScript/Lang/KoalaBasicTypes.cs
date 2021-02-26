@@ -14,6 +14,9 @@ namespace KoalaScript.Lang
 			RawValue = rawValue ?? throw new ArgumentNullException(nameof(rawValue));
 		}
 
+		public override object GetValue() => RawValue;
+		public virtual T GetValueCasted() => RawValue;
+
 		public override int CountChildren() => 0;
 		public override void GetChildren(Span<KoalaType> childrenReceiver) { }
 		public override KoalaType SetChildren(ReadOnlySpan<KoalaType> newChildren) => this;
@@ -21,7 +24,7 @@ namespace KoalaScript.Lang
 		public bool Equals(T other) => RawValue.Equals(other);
 		public int CompareTo(T other) => RawValue.CompareTo(other);
 
-		public override string ToString() => RawValue.ToString();
+		public override string ToString() => GetValue().ToString();
 	}
 
 	public class KString : KoalaLiteral<string>
@@ -29,15 +32,14 @@ namespace KoalaScript.Lang
 		public KString(string rawValue) : base(rawValue) { }
 		public static implicit operator string(KString val) => val.RawValue;
 		public static implicit operator KString(string val) => new KString(val);
-		public override string ToString() => $"\"{RawValue}\"";
+		public override string ToString() => $"\"{GetValue()}\"";
 	}
 
-	public class KNumber : KoalaLiteral<double>
+	public class KNumber : KoalaLiteral<int>
 	{
-		public KNumber(double rawValue) : base(rawValue) { }
+		public KNumber(int rawValue) : base(rawValue) { }
 		public static implicit operator double(KNumber val) => val.RawValue;
-		public static implicit operator KNumber(double val) => new KNumber(val);
-		public static implicit operator KNumber(long val) => new KNumber(val);
+		public static implicit operator KNumber(int val) => new KNumber(val);
 		public override string ToString() => RawValue.ToString(NumberFormatInfo.InvariantInfo);
 	}
 
@@ -50,15 +52,7 @@ namespace KoalaScript.Lang
 
 	public class KVar : KoalaLiteral<string>
 	{
-		public VariableScope Scope { get; }
-
-		public KVar(VariableScope scope, string rawValue)
-			: base(rawValue)
-		{
-			Scope = scope;
-		}
-
-		public override string ToString() => $"{Scope.GetSymbol()}{RawValue}";
+		public KVar(string rawValue) : base(rawValue) { }
 	}
 
 }

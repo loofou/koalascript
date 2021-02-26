@@ -1,3 +1,5 @@
-set $testVar to 5 #hello
-
-set $teVar to 7
+# test script
+set testString to "hello world".
+set testVar to foo. #does not actually exist
+set testBool to yes.
+set testNumber to -7.
