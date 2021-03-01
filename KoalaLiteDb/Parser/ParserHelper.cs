@@ -8,9 +8,10 @@ namespace KoalaLiteDb.Parser
 	internal static class ParserHelper
 	{
 		static readonly Parser<char, string> Hash = String("#");
-
 		static readonly Parser<char, Unit> SkipComments = SkipLineComment(Hash).Before(SkipWhitespaces);
 
+		internal static readonly Parser<char, char> Dot = Tok('.');
+		
 		internal static Parser<char, T> Tok<T>(Parser<char, T> p) =>
 			Try(SkipComments.Optional()
 							.Then(p

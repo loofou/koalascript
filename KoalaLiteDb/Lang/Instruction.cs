@@ -73,20 +73,28 @@ namespace KoalaLiteDb.Lang
 	public class InitCollectionInstruction : IKoalaInstruction
 	{
 		public string CollectionName { get; }
-		public IEnumerable<MakeDatasetInstruction> Instructions { get; }
+		public IEnumerable<MakeDatasetInstruction> MakeDatasetInstructions { get; }
+		public IEnumerable<EnsureIndexInstruction> EnsureIndexInstructions { get; }
 
-		public InitCollectionInstruction(string collectionName, IEnumerable<MakeDatasetInstruction> instructions)
+		public InitCollectionInstruction(string collectionName
+									   , IEnumerable<MakeDatasetInstruction> makeDatasetInstructions
+									   , IEnumerable<EnsureIndexInstruction> ensureIndexInstructions)
 		{
 			CollectionName = collectionName;
-			Instructions = instructions;
+			MakeDatasetInstructions = makeDatasetInstructions;
+			EnsureIndexInstructions = ensureIndexInstructions;
 		}
 
 		public void Run(UltraLiteDatabase db)
 		{
 			UltraLiteCollection<BsonDocument> collection = db.GetCollection(CollectionName);
-			foreach(MakeDatasetInstruction makeDatasetInstruction in Instructions)
+			foreach(MakeDatasetInstruction makeDatasetInstruction in MakeDatasetInstructions)
 			{
 				makeDatasetInstruction.Run(ref collection);
+			}
+			foreach(EnsureIndexInstruction ensureIndexInstruction in EnsureIndexInstructions)
+			{
+				ensureIndexInstruction.Run(ref collection);
 			}
 		}
 	}
@@ -116,6 +124,23 @@ namespace KoalaLiteDb.Lang
 			}
 
 			col.Upsert(document);
+		}
+	}
+
+	public class EnsureIndexInstruction : IKoalaInstruction
+	{
+		public List<string> Path { get; }
+		public bool Unique { get; }
+
+		public EnsureIndexInstruction(IEnumerable<string> path, bool unique = false)
+		{
+			Unique = unique;
+			Path = path.ToList();
+		}
+
+		public void Run(ref UltraLiteCollection<BsonDocument> col)
+		{
+			col.EnsureIndex("");
 		}
 	}
 

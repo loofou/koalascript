@@ -59,7 +59,7 @@ namespace KoalaLiteDb.Tests
 			InitCollectionInstruction init = initInstructions[0];
 			Assert.AreEqual("Config", init.CollectionName);
 
-			List<MakeDatasetInstruction> makeDatasetInstructions = init.Instructions.ToList();
+			List<MakeDatasetInstruction> makeDatasetInstructions = init.MakeDatasetInstructions.ToList();
 			Assert.IsTrue(makeDatasetInstructions.Count == 1);
 
 			MakeDatasetInstruction make = makeDatasetInstructions[0];

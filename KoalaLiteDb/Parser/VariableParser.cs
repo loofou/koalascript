@@ -11,15 +11,15 @@ namespace KoalaLiteDb.Parser
 	internal static class VariableParser
 	{
 		static readonly Parser<char, char> Slash = Tok('/');
+		static readonly Parser<char, string> Asterisk = Tok("*");
 		static readonly Parser<char, string> Set = Tok("set");
 		static readonly Parser<char, string> To = Tok("to");
-		static readonly Parser<char, char> Dot = Tok('.');
 
 		internal static readonly Parser<char, string> VariableName =
 			Tok(Lowercase.SelectMany(_ => OneOf(Letter, Digit, Char('_'), Char('-')).ManyString()
 								   , (first, rest) => first + rest)).Labelled("variable name");
 
-		internal static readonly Parser<char, IEnumerable<string>> VariablePath = Try(VariableName.SeparatedAtLeastOnce(Slash));
+		internal static readonly Parser<char, IEnumerable<string>> VariablePath = Try(VariableName.Or(Asterisk).SeparatedAtLeastOnce(Slash));
 
 		internal static readonly Parser<char, SetVarInstruction> SetVarInstruction =
 			Tok(

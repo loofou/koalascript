@@ -37,6 +37,21 @@ namespace KoalaLiteDb.Tests
 			Assert.AreEqual(new List<string> { "config", "test2" }, instruction1.Path);
 			Assert.AreEqual(true, instruction1.Value.AsBoolean);
 		}
+
+		[Test]
+		public void OptimizeInstructionTest()
+		{
+			string script = "optimize unique tag. optimize tag2/hello/*.";
+			IEnumerable<EnsureIndexInstruction> result = DatasetParser.OptimizeInstruction.Many().ParseOrThrow(script);
+
+			List<EnsureIndexInstruction> ensureIndexInstructions = result.ToList();
+			Assert.IsTrue(ensureIndexInstructions.Count == 2);
+
+			Assert.AreEqual(new[] { "tag" }.ToList(), ensureIndexInstructions[0].Path);
+			Assert.AreEqual(true, ensureIndexInstructions[0].Unique);
+			Assert.AreEqual(new[] { "tag2", "hello", "*" }.ToList(), ensureIndexInstructions[1].Path);
+			Assert.AreEqual(false, ensureIndexInstructions[1].Unique);
+		}
 	}
 
 }

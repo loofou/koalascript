@@ -24,11 +24,11 @@ namespace KoalaLiteDb.Parser
 			   );
 
 		internal static readonly Parser<char, InitCollectionInstruction> InitInstruction =
-			Tok(
-				InitLine
-				   .SelectMany(_ => MakeInstruction.Many()
-							 , (collectionName, makeInstructions)
-								   => new InitCollectionInstruction(collectionName, makeInstructions))
+			Tok(Map((collectionName, makeInstructions, optimizeInstructions)
+						=> new InitCollectionInstruction(collectionName, makeInstructions, optimizeInstructions)
+				  , InitLine
+				  , MakeInstruction.Many()
+				  , OptimizeInstruction.Many())
 				   .Before(End)
 			   );
 	}
