@@ -28,23 +28,20 @@ namespace KoalaLiteDb.Tests
 			Assert.AreEqual(expected, ParserHelper.Tok(expected).ParseOrThrow(script));
 		}
 
-		[TestCase("hello.", "hello")]
-		[TestCase("hello. # comment", "hello")]
-		[TestCase("#comment\nhello .", "hello")]
-		[TestCase("#comment\nhello .#comment2", "hello")]
-		public void LineTest(string script, string expected)
+		[TestCase("hello", "hello")]
+		[TestCase("hello # comment", "hello")]
+		[TestCase("#comment\nhello ", "hello")]
+		[TestCase("#comment\nhello #comment2", "hello")]
+		public void TokCommentTest(string script, string expected)
 		{
-			Assert.AreEqual(expected, ParserHelper.Line(ParserHelper.Tok(expected)).ParseOrThrow(script));
+			Assert.AreEqual(expected, ParserHelper.Tok(ParserHelper.Tok(expected)).ParseOrThrow(script));
 		}
 
-		[TestCase("hello")]
-		[TestCase("#comment\nhello")]
+		[TestCase("#comment hello")]
 		[TestCase("#comment")]
-		[TestCase("hello#comment")]
-		[TestCase("hello # comment\n .")]
-		public void LineFail(string script)
+		public void TokCommentFail(string script)
 		{
-			Assert.Catch<ParseException>(() => ParserHelper.Line(ParserHelper.Tok("hello")).ParseOrThrow(script));
+			Assert.Catch<ParseException>(() => ParserHelper.Tok(ParserHelper.Tok("hello")).ParseOrThrow(script));
 		}
 	}
 

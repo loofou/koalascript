@@ -17,11 +17,11 @@ namespace KoalaLiteDb.Parser
 
 		public void RunScript(string script)
 		{
-			IEnumerable<IKoalaInstruction> instructions = KoalaParser.MainParser.ParseOrThrow(script);
+			IEnumerable<InitCollectionInstruction> instructions = KoalaParser.MainParser.ParseOrThrow(script);
 
-			foreach(IKoalaInstruction instruction in instructions)
+			foreach(InitCollectionInstruction instruction in instructions)
 			{
-				//instruction.Run(database);
+				instruction.Run(database);
 			}
 		}
 	}

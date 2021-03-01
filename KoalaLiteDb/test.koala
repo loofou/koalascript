@@ -1,0 +1,9 @@
+# test file to test syntax etc
+init Configs:
+
+	make testConfig (
+		set filepath to "hello world".
+		set tags / test2 to on.
+	)
+	
+end
