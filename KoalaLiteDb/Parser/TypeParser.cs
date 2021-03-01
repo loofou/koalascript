@@ -44,24 +44,9 @@ namespace KoalaLiteDb.Parser
 
 		internal static readonly Parser<char, bool> Bool =
 			Tok(True.Or(False))
-			   .Select(boolean =>
-				{
-					if(boolean.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-					|| boolean.Equals("on", StringComparison.InvariantCultureIgnoreCase)
-					|| boolean.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
-					{
-						return true;
-					}
-
-					if(boolean.Equals("false", StringComparison.InvariantCultureIgnoreCase)
-					|| boolean.Equals("off", StringComparison.InvariantCultureIgnoreCase)
-					|| boolean.Equals("no", StringComparison.InvariantCultureIgnoreCase))
-					{
-						return false;
-					}
-
-					throw new ArgumentException();
-				})
+			   .Select(boolean => boolean.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+							   || boolean.Equals("on", StringComparison.InvariantCultureIgnoreCase)
+							   || boolean.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
 			   .Labelled("boolean");
 
 		//Parsers

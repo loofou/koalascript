@@ -27,52 +27,46 @@ namespace KoalaLiteDb.Lang
 				return;
 			}
 
-			SetVarRecursively(ref document, Path);
+			SetVarRecursively(ref document, 0);
 		}
 
-		void SetVarRecursively(ref BsonDocument document, List<string> path)
+		void SetVarRecursively(ref BsonDocument document, int depth)
 		{
-			if(path.Count == 1)
+			if(depth == Path.Count - 1)
 			{
-				document[path[0]] = Value;
+				document[Path[depth]] = Value;
 				return;
 			}
 
-			for(int i = 0; i < path.Count; ++i)
+			string name = Path[depth];
+			if(document.ContainsKey(name))
 			{
-				string name = path[i];
-				if(document.ContainsKey(name))
-				{
-					if(document[name].IsDocument)
-					{
-						BsonDocument subDoc = document[name].AsDocument;
-						List<string> subPath = new(path);
-						subPath.RemoveAt(0);
-						SetVarRecursively(ref subDoc, subPath);
-					}
-					else
-					{
-						List<string> errorPathList = new(i);
-						for(int j = 0; j < i; ++j)
-						{
-							errorPathList.Add(Path[j]);
-						}
+				//Throws exception, so will break out of the method
+				if(!document[name].IsDocument) HandleError(depth);
 
-						string fullPath = string.Join("/", Path.Select(s => s));
-						string errorPath = string.Join("/", errorPathList.Select(s => s));
-						throw new DataException($"Can't set variable at {fullPath}! {errorPath} is not a document!");
-					}
-				}
-				else
-				{
-					BsonDocument subDoc = new();
-					document[name] = subDoc;
-
-					List<string> subPath = new(path);
-					subPath.RemoveAt(0);
-					SetVarRecursively(ref subDoc, subPath);
-				}
+				BsonDocument subDoc = document[name].AsDocument;
+				SetVarRecursively(ref subDoc, depth + 1);
 			}
+			else
+			{
+				BsonDocument subDoc = new();
+				document[name] = subDoc;
+
+				SetVarRecursively(ref subDoc, depth + 1);
+			}
+		}
+
+		void HandleError(int depth)
+		{
+			List<string> errorPathList = new(depth + 1);
+			for(int j = 0; j < depth + 1; ++j)
+			{
+				errorPathList.Add(Path[j]);
+			}
+
+			string fullPath = string.Join("/", Path.Select(s => s));
+			string errorPath = string.Join("/", errorPathList.Select(s => s));
+			throw new DataException($"Can't set variable at '{fullPath}'! '{errorPath}' is not a document!");
 		}
 	}
 

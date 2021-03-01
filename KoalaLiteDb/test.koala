@@ -3,7 +3,8 @@ init Configs:
 
 	make testConfig (
 		set filepath to "hello world".
-		set tags / test2 to on.
+		set tags / test1 to on.
+		set tags / test2 to 5.
 	)
 	
 end
