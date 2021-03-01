@@ -16,20 +16,17 @@ namespace KoalaLiteDb.Parser
 		static readonly Parser<char, string> To = Tok("to");
 
 		internal static readonly Parser<char, string> VariableName =
-			Tok(Lowercase.SelectMany(_ => OneOf(Letter, Digit, Char('_'), Char('-')).ManyString()
-								   , (first, rest) => first + rest)).Labelled("variable name");
+			Try(Tok(Lowercase.SelectMany(_ => OneOf(Letter, Digit, Char('_'), Char('-')).ManyString()
+									   , (first, rest) => first + rest))).Labelled("variable name");
 
 		internal static readonly Parser<char, IEnumerable<string>> VariablePath = Try(VariableName.Or(Asterisk).SeparatedAtLeastOnce(Slash));
 
 		internal static readonly Parser<char, SetVarInstruction> SetVarInstruction =
-			Tok(
-				Set
-				   .Then(VariablePath)
-				   .Before(To)
-				   .SelectMany(_ => ValueType,
-							   (path, value) => new SetVarInstruction(path, value))
-				   .Before(Dot)
-			   );
+			Line(Map((path, value) => new SetVarInstruction(path, value)
+				   , Set.Then(VariablePath)
+				   , To.Then(ValueType)
+					)
+					.Before(Dot));
 	}
 
 }

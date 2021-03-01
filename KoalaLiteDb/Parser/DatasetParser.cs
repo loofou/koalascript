@@ -1,5 +1,6 @@
 using KoalaLiteDb.Lang;
 using Pidgin;
+using static Pidgin.Parser;
 using static KoalaLiteDb.Parser.ParserHelper;
 using static KoalaLiteDb.Parser.VariableParser;
 
@@ -15,24 +16,18 @@ namespace KoalaLiteDb.Parser
 		static readonly Parser<char, string> Unique = Tok("unique");
 
 		internal static readonly Parser<char, MakeDatasetInstruction> MakeInstruction =
-			Tok(
-				Make
-				   .Then(VariableName)
-				   .Before(ParenthesisOpen)
-				   .SelectMany(_ => VariableParser.SetVarInstruction.Many(),
-							   (datasetName, instructions) =>
-								   new MakeDatasetInstruction(datasetName, instructions))
-				   .Before(ParenthesisClose)
-			   );
+			Map((datasetName, instructions) => new MakeDatasetInstruction(datasetName, instructions)
+			  , Line(Make
+					.Then(VariableName)
+					.Before(ParenthesisOpen))
+			  , Line(VariableParser.SetVarInstruction).Many())
+			   .Before(Line(ParenthesisClose));
 
 		internal static readonly Parser<char, EnsureIndexInstruction> OptimizeInstruction =
-			Tok(
-				Optimize
-				   //.Then(Unique).Optional()
-				   .SelectMany(_ => VariablePath
-							 , (unique, path) => new EnsureIndexInstruction(path,/* unique.HasValue*/ false))
-				   .Before(Dot)
-			   );
+			Line(Map((_, unique, path) => new EnsureIndexInstruction(path, unique.HasValue)
+				   , Optimize
+				   , Unique.Optional()
+				   , VariablePath).Before(Dot));
 	}
 
 }

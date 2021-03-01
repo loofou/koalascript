@@ -23,27 +23,27 @@ namespace KoalaLiteDb.Parser
 
 		//Bool Type
 		static readonly Parser<char, string> True
-			= Tok(OneOf(
+			= Try(Tok(OneOf(
 						String("true")
 					  , String("True")
 					  , String("yes")
 					  , String("Yes")
 					  , String("on")
 					  , String("On")
-					   ));
+					   )));
 
 		static readonly Parser<char, string> False =
-			Tok(OneOf(
+			Try(Tok(OneOf(
 					  String("false")
 					, String("False")
 					, String("no")
 					, String("No")
 					, String("off")
 					, String("Off")
-					 ));
+					 )));
 
 		internal static readonly Parser<char, bool> Bool =
-			Tok(True.Or(False))
+			Try(Tok(True.Or(False)))
 			   .Select(boolean => boolean.Equals("true", StringComparison.InvariantCultureIgnoreCase)
 							   || boolean.Equals("on", StringComparison.InvariantCultureIgnoreCase)
 							   || boolean.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
