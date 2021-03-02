@@ -32,16 +32,16 @@ namespace KoalaLiteDb.Tests
 		[TestCase("hello # comment", "hello")]
 		[TestCase("#comment\nhello ", "hello")]
 		[TestCase("#comment\nhello #comment2", "hello")]
-		public void TokCommentTest(string script, string expected)
+		public void LineCommentTest(string script, string expected)
 		{
-			Assert.AreEqual(expected, ParserHelper.Tok(ParserHelper.Tok(expected)).ParseOrThrow(script));
+			Assert.AreEqual(expected, ParserHelper.Line(ParserHelper.Tok(expected)).ParseOrThrow(script));
 		}
 
 		[TestCase("#comment hello")]
 		[TestCase("#comment")]
-		public void TokCommentFail(string script)
+		public void LineCommentFail(string script)
 		{
-			Assert.Catch<ParseException>(() => ParserHelper.Tok(ParserHelper.Tok("hello")).ParseOrThrow(script));
+			Assert.Catch<ParseException>(() => ParserHelper.Line(ParserHelper.Tok("hello")).ParseOrThrow(script));
 		}
 	}
 

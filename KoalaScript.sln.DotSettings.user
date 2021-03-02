@@ -4,8 +4,11 @@
   &lt;Assembly Path="E:\Coding\KoalaScript\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\Emu\AppData\Local\JetBrains\Rider2020.3\resharper-host\temp\Rider\vAny\CoverageData\_KoalaScript.-1152543993\Snapshot\snapshot.utdcvr</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=36534d7f_002Ded11_002D4c09_002D87eb_002D8d4b8c33ecad/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="3" IsActive="True" Name="All tests from &amp;lt;KoalaLiteDb&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Project Location="E:\Coding\KoalaScript\KoalaLiteDb" Presentation="&amp;lt;KoalaLiteDb&amp;gt;" /&gt;&#xD;
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d68e2b82_002Da280_002D4b5c_002Dac67_002Df8caa47f0b00/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="3" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Not&gt;&#xD;
+    &lt;Project Location="E:\Coding\KoalaScript\KoalaScript" Presentation="&amp;lt;KoalaScript&amp;gt;" /&gt;&#xD;
+  &lt;/Not&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	

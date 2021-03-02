@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using KoalaLiteDb.Interpreter;
 using KoalaLiteDb.Parser;
 using NUnit.Framework;
 using UltraLiteDB;
@@ -15,7 +16,7 @@ namespace KoalaLiteDb.Tests
 		{
 			File.Delete("ScriptTests.db");
 		}
-		
+
 		public class TellasConfig
 		{
 			public string Id { get; set; }
@@ -28,9 +29,11 @@ namespace KoalaLiteDb.Tests
 		{
 			string script = File.ReadAllText("../../../test.koala");
 
-			UltraLiteDatabase database = new("ScriptTests.db", BsonMapper.Global);
-			KoalaInterpreter interpreter = new(database);
+			using KoalaDatabase koalaDatabase = new();
+			KoalaInterpreter interpreter = new(koalaDatabase);
 			interpreter.RunScript(script);
+
+			UltraLiteDatabase database = koalaDatabase.Database;
 
 			Assert.IsTrue(database.CollectionExists("Configs"));
 			UltraLiteCollection<BsonDocument> collection = database.GetCollection("Configs");

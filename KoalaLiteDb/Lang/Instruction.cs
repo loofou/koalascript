@@ -92,6 +92,7 @@ namespace KoalaLiteDb.Lang
 			{
 				makeDatasetInstruction.Run(ref collection);
 			}
+
 			foreach(EnsureIndexInstruction ensureIndexInstruction in EnsureIndexInstructions)
 			{
 				ensureIndexInstruction.Run(ref collection);
@@ -140,7 +141,8 @@ namespace KoalaLiteDb.Lang
 
 		public void Run(ref UltraLiteCollection<BsonDocument> col)
 		{
-			col.EnsureIndex("");
+			string field = string.Join(".", Path);
+			col.EnsureIndex(field, Unique);
 		}
 	}
 

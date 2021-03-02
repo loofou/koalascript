@@ -1,5 +1,6 @@
 using System.Data;
 using System.IO;
+using KoalaLiteDb.Interpreter;
 using KoalaLiteDb.Parser;
 using NUnit.Framework;
 using UltraLiteDB;
@@ -26,7 +27,7 @@ namespace KoalaLiteDb.Tests
 		)
 		end";
 
-			UltraLiteDatabase database = new("InterpreterTests.db", BsonMapper.Global);
+			using KoalaDatabase database = new();
 			KoalaInterpreter interpreter = new(database);
 
 			DataException ex = Assert.Throws<DataException>(() => interpreter.RunScript(script));

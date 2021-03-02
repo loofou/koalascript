@@ -7,6 +7,6 @@ init Configs:
 		set tags / test2 to 5.
 	)
 	
-	optimize filePath.
-	optimize tags / *.
+	optimize unique filePath.
+	optimize tags.
 end

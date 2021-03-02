@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using KoalaLiteDb.Lang;
+using KoalaLiteDb.Parser;
 using Pidgin;
 using UltraLiteDB;
 
-namespace KoalaLiteDb.Parser
+namespace KoalaLiteDb.Interpreter
 {
 
 	public class KoalaInterpreter
 	{
-		readonly UltraLiteDatabase database;
+		readonly KoalaDatabase database;
 
-		public KoalaInterpreter(UltraLiteDatabase database)
+		public KoalaInterpreter(KoalaDatabase database)
 		{
 			this.database = database;
 		}
@@ -21,7 +22,7 @@ namespace KoalaLiteDb.Parser
 
 			foreach(InitCollectionInstruction instruction in instructions)
 			{
-				instruction.Run(database);
+				instruction.Run(database.Database);
 			}
 		}
 	}
